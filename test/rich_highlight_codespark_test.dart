@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rich_highlight_text_codespark/rich_highlight_codespark.dart';
+import 'package:rich_highlight_text_codespark/rich_highlight_text_codespark.dart';
 
 void main() {
   testWidgets('Text.highlight highlights the substring correctly',

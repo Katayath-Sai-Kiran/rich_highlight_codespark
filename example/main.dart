@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rich_highlight_text_codespark/rich_highlight_codespark.dart';
+import 'package:rich_highlight_text_codespark/rich_highlight_text_codespark.dart';
 
 void main() => runApp(const HighlightExampleApp());
 
