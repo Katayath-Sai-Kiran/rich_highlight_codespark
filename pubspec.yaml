@@ -1,7 +1,7 @@
 name: rich_highlight_text_codespark
 description: "Adds extension methods to highlight substrings in Text or String using Text.rich and custom styles. Simple inline highlighting with minimal code."
-version: 0.0.1
-homepage: https://github.com/Katayath-Sai-Kiran/rich_highlight_text_codespark
+version: 0.0.2
+homepage: https://github.com/Katayath-Sai-Kiran/rich_highlight_codespark
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
