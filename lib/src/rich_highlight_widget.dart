@@ -20,137 +20,153 @@ extension RichHighlightExtension on Text {
     TextWidthBasis? textWidthBasis,
     TextHeightBehavior? textHeightBehavior,
   }) {
-    final String? originalText = data;
-    if (originalText == null) return this;
-    if (originalText.isEmpty || highlightText.isEmpty) return this;
+    return _highlightInternal(
+      [highlightText],
+      highlightStyle: highlightStyle,
+      caseSensitive: caseSensitive,
+      highlightMode: highlightMode,
+      textAlign: textAlign,
+      textDirection: textDirection,
+      locale: locale,
+      softWrap: softWrap,
+      overflow: overflow,
+      maxLines: maxLines,
+      semanticsLabel: semanticsLabel,
+      strutStyle: strutStyle,
+      textScaler: textScaler,
+      textWidthBasis: textWidthBasis,
+      textHeightBehavior: textHeightBehavior,
+    );
+  }
 
-    // Prepare text for search based on case sensitivity
+  Text highlightMultiple(
+    List<String> highlightTexts, {
+    TextStyle? highlightStyle,
+    bool caseSensitive = true,
+    HighlightMode highlightMode = HighlightMode.all,
+    TextAlign? textAlign,
+    TextDirection? textDirection,
+    Locale? locale,
+    bool? softWrap,
+    TextOverflow? overflow,
+    int? maxLines,
+    String? semanticsLabel,
+    StrutStyle? strutStyle,
+    TextScaler? textScaler,
+    TextWidthBasis? textWidthBasis,
+    TextHeightBehavior? textHeightBehavior,
+  }) {
+    return _highlightInternal(
+      highlightTexts,
+      highlightStyle: highlightStyle,
+      caseSensitive: caseSensitive,
+      highlightMode: highlightMode,
+      textAlign: textAlign,
+      textDirection: textDirection,
+      locale: locale,
+      softWrap: softWrap,
+      overflow: overflow,
+      maxLines: maxLines,
+      semanticsLabel: semanticsLabel,
+      strutStyle: strutStyle,
+      textScaler: textScaler,
+      textWidthBasis: textWidthBasis,
+      textHeightBehavior: textHeightBehavior,
+    );
+  }
+
+  Text _highlightInternal(
+    List<String> highlightTexts, {
+    TextStyle? highlightStyle,
+    bool caseSensitive = true,
+    HighlightMode highlightMode = HighlightMode.all,
+    TextAlign? textAlign,
+    TextDirection? textDirection,
+    Locale? locale,
+    bool? softWrap,
+    TextOverflow? overflow,
+    int? maxLines,
+    String? semanticsLabel,
+    StrutStyle? strutStyle,
+    TextScaler? textScaler,
+    TextWidthBasis? textWidthBasis,
+    TextHeightBehavior? textHeightBehavior,
+  }) {
+    final String? originalText = data;
+    if (originalText == null ||
+        originalText.isEmpty ||
+        highlightTexts.isEmpty ||
+        highlightTexts.every((e) => e.isEmpty)) {
+      return this;
+    }
+
     final sourceText =
         caseSensitive ? originalText : originalText.toLowerCase();
-    final searchText =
-        caseSensitive ? highlightText : highlightText.toLowerCase();
+    final queries = caseSensitive
+        ? highlightTexts
+        : highlightTexts.map((e) => e.toLowerCase()).toList();
 
-    final List<TextSpan> spans = [];
+    final List<_Match> matches = [];
 
-    switch (highlightMode) {
-      case HighlightMode.all:
-        {
+    for (final query in queries) {
+      if (query.isEmpty) continue;
+
+      switch (highlightMode) {
+        case HighlightMode.all:
           int start = 0;
           while (true) {
-            final index = sourceText.indexOf(searchText, start);
-            if (index < 0) {
-              spans.add(TextSpan(text: originalText.substring(start)));
-              break;
-            }
-            if (index > start) {
-              spans.add(TextSpan(text: originalText.substring(start, index)));
-            }
-            spans.add(
-              TextSpan(
-                text: originalText.substring(
-                  index,
-                  index + highlightText.length,
-                ),
-                style: highlightStyle,
-              ),
-            );
-            start = index + highlightText.length;
+            final index = sourceText.indexOf(query, start);
+            if (index == -1) break;
+            matches.add(_Match(index, index + query.length));
+            start = index + query.length;
           }
           break;
-        }
-      case HighlightMode.first:
-        {
-          final index = sourceText.indexOf(searchText);
-          if (index < 0) {
-            spans.add(TextSpan(text: originalText));
-          } else {
-            if (index > 0) {
-              spans.add(TextSpan(text: originalText.substring(0, index)));
-            }
-            spans.add(
-              TextSpan(
-                text: originalText.substring(
-                  index,
-                  index + highlightText.length,
-                ),
-                style: highlightStyle,
-              ),
-            );
-            if (index + highlightText.length < originalText.length) {
-              spans.add(
-                TextSpan(
-                  text: originalText.substring(index + highlightText.length),
-                ),
-              );
-            }
+
+        case HighlightMode.first:
+          final index = sourceText.indexOf(query);
+          if (index != -1) {
+            matches.add(_Match(index, index + query.length));
           }
           break;
-        }
-      case HighlightMode.last:
-        {
-          final index = sourceText.lastIndexOf(searchText);
-          if (index < 0) {
-            spans.add(TextSpan(text: originalText));
-          } else {
-            if (index > 0) {
-              spans.add(TextSpan(text: originalText.substring(0, index)));
-            }
-            spans.add(
-              TextSpan(
-                text: originalText.substring(
-                  index,
-                  index + highlightText.length,
-                ),
-                style: highlightStyle,
-              ),
-            );
-            if (index + highlightText.length < originalText.length) {
-              spans.add(
-                TextSpan(
-                  text: originalText.substring(index + highlightText.length),
-                ),
-              );
-            }
+
+        case HighlightMode.last:
+          final index = sourceText.lastIndexOf(query);
+          if (index != -1) {
+            matches.add(_Match(index, index + query.length));
           }
           break;
-        }
-      // case HighlightMode.nth:
-      //   {
-      //     int occurrence = 0;
-      //     int startIndex = 0;
-      //     int? targetIndex;
-      //     while (true) {
-      //       final index = sourceText.indexOf(searchText, startIndex);
-      //       if (index < 0) break;
-      //       occurrence++;
-      //       if (occurrence == nth) {
-      //         targetIndex = index;
-      //         break;
-      //       }
-      //       startIndex = index + highlightText.length;
-      //     }
-      //     if (targetIndex == null) {
-      //       // nth occurrence not found, return full text without highlights
-      //       spans.add(TextSpan(text: originalText));
-      //     } else {
-      //       if (targetIndex > 0) {
-      //         spans.add(TextSpan(text: originalText.substring(0, targetIndex)));
-      //       }
-      //       spans.add(
-      //         TextSpan(
-      //           text: originalText.substring(
-      //               targetIndex, targetIndex + highlightText.length),
-      //           style: highlightStyle,
-      //         ),
-      //       );
-      //       if (targetIndex + highlightText.length < originalText.length) {
-      //         spans.add(TextSpan(
-      //             text: originalText
-      //                 .substring(targetIndex + highlightText.length)));
-      //       }
-      //     }
-      //     break;
-      //   }
+      }
+    }
+
+    if (matches.isEmpty) return this;
+
+    matches.sort((a, b) => a.start.compareTo(b.start));
+
+    // Merge non-overlapping
+    final List<_Match> nonOverlapping = [];
+    for (final match in matches) {
+      if (nonOverlapping.isEmpty || match.start >= nonOverlapping.last.end) {
+        nonOverlapping.add(match);
+      }
+    }
+
+    final List<TextSpan> spans = [];
+    int current = 0;
+    for (final match in nonOverlapping) {
+      if (match.start > current) {
+        spans.add(TextSpan(text: originalText.substring(current, match.start)));
+      }
+      spans.add(
+        TextSpan(
+          text: originalText.substring(match.start, match.end),
+          style: highlightStyle,
+        ),
+      );
+      current = match.end;
+    }
+
+    if (current < originalText.length) {
+      spans.add(TextSpan(text: originalText.substring(current)));
     }
 
     return Text.rich(
@@ -169,4 +185,10 @@ extension RichHighlightExtension on Text {
       textHeightBehavior: textHeightBehavior ?? this.textHeightBehavior,
     );
   }
+}
+
+class _Match {
+  final int start;
+  final int end;
+  _Match(this.start, this.end);
 }

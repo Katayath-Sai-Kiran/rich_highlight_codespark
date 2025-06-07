@@ -1,6 +1,6 @@
 
 
-<img src="https://raw.githubusercontent.com/Katayath-Sai-Kiran/rich_highlight_text_codespark/main/assets/banners/banner.png" alt="Banner"/>
+<img src="https://raw.githubusercontent.com/Katayath-Sai-Kiran/rich_highlight_codespark/main/assets/banners/banner.png" alt="Banner"/>
 
 # ✨ rich_highlight_text_codespark
 
