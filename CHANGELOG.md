@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.2] - 2025-06-07
+
+- `.toRichText()` extension on `String` to generate interactive highlighted `RichText` easily.
+- `onTap` support on highlighted substrings via `TapGestureRecognizer` returns a string.
+
+
 ## [0.0.1] - 2025-06-03
 
 🎉 Initial release of `rich_highlight_text_codespark`!

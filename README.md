@@ -52,6 +52,38 @@ Text(
 );
 ```
 
+```dart
+'Flutter is fun and powerful!'.toRichText(
+  style: TextStyle(fontSize: 18),
+  highlights: ['Flutter', 'powerful'],
+  highlightStyle: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+  onTap: (text) {
+    print('Tapped: $text');
+  },
+);
+```
+
+```dart
+Text(
+  'Flutter is fun and powerful!',
+  style: TextStyle(fontSize: 18),
+).highlight(
+  'Flutter',
+  highlightStyle: TextStyle(
+    color: Colors.blue,
+    fontWeight: FontWeight.bold,
+    decoration: TextDecoration.underline,
+  ),
+  onTap: (text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('You tapped on "$text"!')),
+    );
+  },
+);
+
+```
+
+
 ### ✨ Highlight Multiple Substrings
 
 ```dart
